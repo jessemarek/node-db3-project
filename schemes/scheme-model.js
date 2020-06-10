@@ -25,21 +25,27 @@ function findSteps(id) {
         .where('steps.scheme_id', id)
         .select('steps.id', 'schemes.scheme_name', 'steps.step_number', 'steps.instructions')
         .orderBy('steps.step_number')
+
 }
 
 function add(data) {
     return db('schemes')
         .insert(data)
+        .then(([id]) => findById(id))
 }
 
 function update(data, id) {
     return db('schemes')
         .where('id', id)
         .update(data)
+        .then(count => count ? findById(id) : 0)
 }
 
-function remove(id) {
+async function remove(id) {
+    const scheme = await findById(id)
+
     return db('schemes')
         .where('id', id)
         .del()
+        .then(count => count ? scheme : count)
 }
